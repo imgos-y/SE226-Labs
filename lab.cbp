@@ -1,0 +1,171 @@
+#include <iostream>
+using namespace std;
+
+class Node {
+public:
+    int data;
+    Node* next;
+};
+
+class Stack {
+private:
+    Node* head;
+    int num;
+    int capacity;
+
+public:
+    Stack(int initialCapacity) {
+        head = nullptr;
+        num = -1;
+        capacity = initialCapacity;
+    }
+
+    void push(int x) {
+        if (num + 1 >= capacity) {
+            increaseCapacity();
+        }
+
+        Node* newNode = new Node();
+        if (!newNode) {
+            cout << "Memory allocation failed!" << endl;
+            return;
+        }
+        newNode->data = x;
+        newNode->next = head;
+        head = newNode;
+        num++;
+
+        cout << "Pushed " << x << " into stack (current size: " << num + 1 << " / " << capacity << ")" << endl;
+    }
+
+    int pop() {
+        if (isEmpty()) {
+            cout << "Stack is empty. No element to pop." << endl;
+            return -1;
+        }
+
+        int popValue = head->data;
+        Node* temp = head;
+        head = head->next;
+        delete temp;
+        num--;
+        cout << "Popped top value from stack: " << popValue << " and new stack size: " << num + 1 << endl;
+        return popValue;
+    }
+
+    int peek() {
+        if (isEmpty()) {
+            cout << "Stack is empty. No top element." << endl;
+            return -1;
+        }
+        cout << "Top of stack: " << head->data << endl;
+        return head->data;
+    }
+
+    bool isEmpty() {
+        return num < 0;
+    }
+
+    void increaseCapacity() {
+        capacity *= 2;
+        cout << "Stack capacity increased to: " << capacity << endl;
+    }
+
+    bool deleteElement(int val) {
+        if (isEmpty()) {
+            cout << "Stack is empty." << endl;
+            return false;
+        }
+
+        if (head->data == val) {
+            Node* temp = head;
+            head = head->next;
+            delete temp;
+            num--;
+            cout << "Element " << val << " deleted from the stack." << endl;
+            return true;
+        }
+
+        Node* current = head;
+        while (current->next != nullptr) {
+            if (current->next->data == val) {
+                Node* temp = current->next;
+                current->next = current->next->next;
+                delete temp;
+                num--;
+                cout << "Element " << val << " deleted from the stack." << endl;
+                return true;
+            }
+            current = current->next;
+        }
+
+        cout << "Element " << val << " not found in the stack." << endl;
+        return false;
+    }
+};
+
+int main() {
+    int capacity = 5;
+    Stack myStack(capacity);
+
+    int choice, element;
+
+    while (true) {
+        cout << "\n------ Stack Operations Menu ------\n";
+        cout << "1. Push\n";
+        cout << "2. Pop\n";
+        cout << "3. Peek\n";
+        cout << "4. Check if Stack is Empty\n";
+        cout << "5. Increase Stack Capacity\n";
+        cout << "6. Delete Element\n";
+        cout << "7. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter element to push: ";
+                cin >> element;
+                myStack.push(element);
+                break;
+
+            case 2:
+                element = myStack.pop();
+                if (element != -1) {
+                    cout << "Popped element: " << element << endl;
+                }
+                break;
+
+            case 3:
+                myStack.peek();
+                break;
+
+            case 4:
+                if (myStack.isEmpty()) {
+                    cout << "The stack is empty.\n";
+                } else {
+                    cout << "The stack is not empty.\n";
+                }
+                break;
+
+            case 5:
+                myStack.increaseCapacity();
+                break;
+
+            case 6:
+                cout << "Enter element to delete: ";
+                cin >> element;
+                if (!myStack.deleteElement(element)) {
+                    cout << "Element not found in the stack.\n";
+                }
+                break;
+
+            case 7:
+                cout << "Exiting...\n";
+                return 0;
+
+            default:
+                cout << "Invalid choice! Please try again.\n";
+        }
+    }
+}
